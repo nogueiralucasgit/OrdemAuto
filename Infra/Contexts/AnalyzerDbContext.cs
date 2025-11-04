@@ -7,6 +7,8 @@ namespace Infra.Contexts
     {
         public AnalyzerDbContext(DbContextOptions<AnalyzerDbContext> options) : base(options) { }
         public DbSet<CWParceiroNegocio> ParceiroNegocios { get; set; }
+        public DbSet<CWOrdemServico> OrdemServico { get; set; }
+        public DbSet<CWOrdemServicoItem> OrdemServicoItem { get; set; }
         public DbSet<CWPecas> Pecas { get; set; }
         public DbSet<CWVeiculo> Veiculo { get; set; }
 
@@ -34,9 +36,17 @@ namespace Infra.Contexts
             {
                 entity.ToTable("VEICULOS");
                 entity.HasKey(p => p.nCdVeiculo);
+            }); 
+            
+            modelBuilder.Entity<CWOrdemServico>(entity =>
+            {
+                entity.HasMany(o => o.Itens)
+                .WithOne(i => i.OrdemServico)
+                .HasForeignKey(i => i.nCdOrdemServico);
             });
 
             #endregion
+
             base.OnModelCreating(modelBuilder);
         }
     }
