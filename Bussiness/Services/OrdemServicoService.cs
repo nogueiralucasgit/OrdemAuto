@@ -12,10 +12,12 @@ namespace Bussiness.Services
     public class OrdemServicoService : IOrdemServicoService
     {
         private readonly IOrdemServicoRepository _repository;
+        private readonly ICadastroRepository _cadastroRepository;
 
-        public OrdemServicoService(IOrdemServicoRepository repository)
+        public OrdemServicoService(IOrdemServicoRepository repository, ICadastroRepository cadastroRepository)
         {
             _repository = repository;
+            _cadastroRepository = cadastroRepository;
         }
 
         public async Task<List<DTOOrdemServicoResponse>> Pesquisar()
@@ -41,6 +43,42 @@ namespace Bussiness.Services
             var cw = MapearCW(dto);
             await _repository.Editar(cw);
         }
+        public async Task AdicionarPecas(List<DTOOrdemServicoItemRequest> itens, int idOs)
+        {
+            foreach (var dto in itens)
+            {
+                var peca = await _cadastroRepository.ConsultarPecas(dto.CodigoPeca);
+
+                if (peca == null || peca.nCdPeca == 0)
+                {
+                    peca = new CWPecas
+                    {
+                        sNmPeca = dto.DescricaoReparo, 
+                        sModelo = "",
+                        sCor = "",
+                        tDtAno = DateTime.Now,
+                        sValor = dto.ValorEstimado
+                    };
+
+                    await _cadastroRepository.AdicionarPecas(peca);
+                }
+
+                var item = new CWOrdemServicoItem
+                {
+                    nCdOrdemServico = idOs,
+                    nCdPeca = peca.nCdPeca,
+                    sDsReparo = dto.DescricaoReparo,
+                    dVlEstimado = dto.ValorEstimado,
+                    dVlReal = dto.ValorReal,
+                    eStatus = Enum.TryParse(dto.Status, out eStatusItemOrdemServico status)
+                              ? status
+                              : eStatusItemOrdemServico.Pendente
+                };
+
+                await _repository.AdicionarItem(item);
+            }
+        }
+
         private CWOrdemServico MapearCW(DTOOrdemServicoRequest dto)
         {
             return new CWOrdemServico

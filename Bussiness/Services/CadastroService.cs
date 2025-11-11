@@ -11,15 +11,31 @@ namespace Bussiness.Services
     {
         private readonly ICadastroRepository _repository;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IParceiroService _parceiroService;
     
-        public CadastroService(ICadastroRepository repository)
+        public CadastroService(ICadastroRepository repository, IParceiroService parceiroService)
         {
             _repository = repository;
+            _parceiroService = parceiroService; 
         }
         public async Task<DTOPecasResponse> ConsultarPecas(int id) {
             DTOPecasResponse DTOPecasResponse = new DTOPecasResponse();
             DTOPecasResponse = MapearDTO(await _repository.ConsultarPecas(id));
             return DTOPecasResponse;
+        }
+        public async Task<DTOConsultarTodos> ConsultarTodos()
+        {
+            DTOConsultarTodos dto = new DTOConsultarTodos();
+            List<DTOParceiroNegocioResponse> dtoParceiro = await _parceiroService.Pesquisar();
+            List<DTOPecasResponse> dtoPecas = MapearDTOPecas(await _repository.PesquisarPecas());
+            List<DTOVeiculoResponse> dtoVeiculo = MapearDTOVeiculos(await _repository.PesquisarVeiculos());
+
+            dto.pecas = dtoPecas;
+            dto.veiculo = dtoVeiculo;
+            dto.prestadora = dtoParceiro.Where(x => x.Tipo == (int)enumTipoParceiro.Prestador).ToList();
+            dto.seguradora = dtoParceiro.Where(x => x.Tipo == (int)enumTipoParceiro.Seguradora).ToList();
+ 
+            return dto;
         }
         public async Task AdicionarPecas(DTOPecasResponse dtoParceiro)
         {
@@ -55,8 +71,8 @@ namespace Bussiness.Services
                Codigo = cwPecas.nCdPeca,
                Nome = cwPecas.sNmPeca,
                Cor = cwPecas.sCor,
-               Ano = cwPecas.tDtAno,
-               Modelo = cwPecas.sModelo,
+                Ano = cwPecas?.tDtAno,
+            Modelo = cwPecas.sModelo,
                Valor = cwPecas.sValor,
             };
         }
@@ -72,9 +88,9 @@ namespace Bussiness.Services
                 sValor = dto.Valor,
             };
         }
-        private List<DTOPecasResponse> MapearDTOVeiculo(List<CWPecas> lstParceiro)
+        private List<DTOPecasResponse> MapearDTOPecas(List<CWPecas> lstPecas)
         {
-            return lstParceiro.Select(cwPecas => new DTOPecasResponse
+            return lstPecas.Select(cwPecas => new DTOPecasResponse
             {
                 Codigo = cwPecas.nCdPeca,
                 Nome = cwPecas.sNmPeca,
@@ -97,9 +113,9 @@ namespace Bussiness.Services
                 tDtAno = dto.Ano,
             };
         }
-        private List<DTOVeiculoResponse> MapearDTO(List<CWVeiculo> lstParceiro)
+        private List<DTOVeiculoResponse> MapearDTOVeiculos(List<CWVeiculo> lstVeiculos)
         {
-            return lstParceiro.Select(cwPecas => new DTOVeiculoResponse
+            return lstVeiculos.Select(cwPecas => new DTOVeiculoResponse
             {
                 Codigo = cwPecas.nCdVeiculo,
                 Nome = cwPecas.sNmVeiculo,

@@ -9,5 +9,6 @@ namespace Domain.Interfaces
         Task<CWOrdemServico> Consultar(int id);
         Task Adicionar(CWOrdemServico cWOrdemServico);
         Task Editar(CWOrdemServico cWOrdemServico);
+        Task AdicionarItem(CWOrdemServicoItem item);
     }
 }

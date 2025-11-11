@@ -6,6 +6,7 @@ namespace Domain.Interfaces
     public interface ICadastroService
     {
         Task<DTOPecasResponse> ConsultarPecas(int id);
+        Task<DTOConsultarTodos> ConsultarTodos();
         Task AdicionarPecas(DTOPecasResponse dtoParceiro);
         Task EditarPecas(DTOPecasResponse dtoParceiro);
         Task<DTOVeiculoResponse> ConsultarVeiculo(int id);

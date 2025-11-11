@@ -14,6 +14,12 @@ namespace Invoicing.Controllers
         {
             _cadastroService = cadastroService;
         }
+        [HttpGet("TodosCadastros")]
+        public async Task<ActionResult> ConsultarTodos()
+        {
+            var result = await _cadastroService.ConsultarTodos();
+            return Ok(result);
+        }
 
         [HttpGet("pecas/{id}")]
         public async Task<ActionResult> ConsultarPecas(int id)

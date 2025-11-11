@@ -20,6 +20,14 @@ namespace Infra.Repositories
         public async Task<CWPecas> ConsultarPecas(int id)
         {
             return await _context.Pecas.FindAsync(id) ?? new();
+        } 
+        public async Task<List<CWPecas>> PesquisarPecas()
+        {
+            return await _context.Pecas.ToListAsync();
+        }
+        public async Task<List<CWVeiculo>> PesquisarVeiculos()
+        {
+            return await _context.Veiculo.ToListAsync();
         }
         public async Task AdicionarPecas(CWPecas cwPecas)
         {
@@ -42,6 +50,35 @@ namespace Infra.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+        public async Task<List<CWOrdemServicoItem>> GarantirPecas(List<CWOrdemServicoItem> itens)
+        {
+            var itensAtualizados = new List<CWOrdemServicoItem>();
+
+            foreach (var item in itens)
+            {
+                var peca = await ConsultarPecas(item.nCdPeca);
+
+                if (peca.nCdPeca == 0)
+                {
+                    peca = new CWPecas
+                    {
+                        sNmPeca = item.sDsReparo,
+                        sModelo = "",
+                        sCor = "",
+                        tDtAno = null,
+                        sValor = item.dVlEstimado
+                    };
+
+                    await AdicionarPecas(peca); 
+                }
+                item.nCdPeca = peca.nCdPeca;
+
+                itensAtualizados.Add(item);
+            }
+
+            return itensAtualizados;
+        }
+
         public async Task<CWVeiculo> ConsultarVeiculo(int id)
         {
             return await _context.Veiculo.FindAsync(id) ?? new();

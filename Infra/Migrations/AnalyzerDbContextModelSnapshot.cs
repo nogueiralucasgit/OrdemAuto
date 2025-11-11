@@ -161,7 +161,7 @@ namespace Infra.Migrations
                     b.Property<double>("sValor")
                         .HasColumnType("double precision");
 
-                    b.Property<DateTime>("tDtAno")
+                    b.Property<DateTime?>("tDtAno")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("nCdPeca");

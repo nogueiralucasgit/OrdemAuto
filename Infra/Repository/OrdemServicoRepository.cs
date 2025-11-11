@@ -11,10 +11,12 @@ namespace Infra.Repositories
     public class OrdemServicoRepository : IOrdemServicoRepository
     {
         private readonly AnalyzerDbContext _context;
+        private readonly ICadastroRepository _cadastroRepository;
 
-        public OrdemServicoRepository(AnalyzerDbContext context)
+        public OrdemServicoRepository(AnalyzerDbContext context, ICadastroRepository cadastroRepository)
         {
             _context = context;
+            _cadastroRepository = cadastroRepository;   
         }
         public async Task<List<CWOrdemServico>> Pesquisar()
         {
@@ -41,6 +43,7 @@ namespace Infra.Repositories
 
             cWOrdemServico.Prestador = await _context.ParceiroNegocios.FindAsync(cWOrdemServico.nCdPrestador) ?? new();
             cWOrdemServico.Seguradora = await _context.ParceiroNegocios.FindAsync(cWOrdemServico.nCdSeguradora) ?? new();
+            cWOrdemServico.Itens = await _cadastroRepository.GarantirPecas(cWOrdemServico.Itens.ToList());
 
             _context.Entry(cWOrdemServico.Prestador).State = EntityState.Unchanged;
             _context.Entry(cWOrdemServico.Seguradora).State = EntityState.Unchanged;
@@ -69,6 +72,11 @@ namespace Infra.Repositories
             await _context.OrdemServicoItem.AddRangeAsync(cwOrdemServico.Itens);
 
             _context.OrdemServico.Update(ordemExistente);
+            await _context.SaveChangesAsync();
+        }
+        public async Task AdicionarItem(CWOrdemServicoItem item)
+        {
+            await _context.OrdemServicoItem.AddAsync(item);
             await _context.SaveChangesAsync();
         }
     }

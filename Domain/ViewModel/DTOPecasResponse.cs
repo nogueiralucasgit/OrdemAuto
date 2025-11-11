@@ -13,6 +13,6 @@ namespace Domain.ViewModel
         public string Cor { get; set; }
         public string Modelo { get; set; }
         public double Valor { get; set; }
-        public DateTime Ano { get; set; }
+        public DateTime? Ano { get; set; }
     }
 }

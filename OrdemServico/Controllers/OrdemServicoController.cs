@@ -40,7 +40,7 @@ namespace API.Controllers
                 return StatusCode(500, $"Erro interno: {ex.Message}");
             }
         }
-        [HttpPost]
+        [HttpPost("Cadastrar")]
         public async Task<ActionResult> Adicionar([FromBody] DTOOrdemServicoRequest dto)
         {
             try
@@ -53,6 +53,20 @@ namespace API.Controllers
                 return StatusCode(500, $"Erro ao adicionar a ordem de serviço: {ex.Message}");
             }
         }
+        [HttpPost("AdicionarPecas")]
+        public async Task<ActionResult> AdicionarPecas([FromBody] List<DTOOrdemServicoItemRequest> dto, int codigoOrdem)
+        {
+            try
+            {
+                await _ordemServicoService.AdicionarPecas(dto, codigoOrdem);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao adicionar as peças: {ex.Message}");
+            }
+        }
+
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Editar(int id, [FromBody] DTOOrdemServicoRequest dto)
         {
