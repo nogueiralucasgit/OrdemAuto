@@ -14,6 +14,6 @@ namespace Domain.ViewModel
         public string Cor { get; set; }
         public string Placa { get; set; }
         public string Mecanico { get; set; }
-        public DateTime Ano { get; set; }
+        public DateTime? Ano { get; set; }
     }
 }

@@ -57,7 +57,7 @@ namespace Infra.Repositories
                 .Include(o => o.Itens)
                 .FirstOrDefaultAsync(o => o.nCdOrdemServico == cwOrdemServico.nCdOrdemServico);
 
-            if (ordemExistente == null || ordemExistente.nCdOrdemServico == 0)
+            if (ordemExistente == null)
                 return;
 
             ordemExistente.sDsOrdem = cwOrdemServico.sDsOrdem;
@@ -68,12 +68,19 @@ namespace Infra.Repositories
             ordemExistente.sDsObservacao = cwOrdemServico.sDsObservacao;
             ordemExistente.dVlTotal = cwOrdemServico.dVlTotal;
 
-            _context.OrdemServicoItem.RemoveRange(ordemExistente.Itens);
-            await _context.OrdemServicoItem.AddRangeAsync(cwOrdemServico.Itens);
+            var itensCorrigidos = await _cadastroRepository.GarantirPecas(cwOrdemServico.Itens.ToList());
 
-            _context.OrdemServico.Update(ordemExistente);
+            _context.OrdemServicoItem.RemoveRange(ordemExistente.Itens);
+
+            foreach (var item in itensCorrigidos)
+            {
+                item.nCdOrdemServico = ordemExistente.nCdOrdemServico;
+                _context.OrdemServicoItem.Add(item);
+            }
+
             await _context.SaveChangesAsync();
         }
+
         public async Task AdicionarItem(CWOrdemServicoItem item)
         {
             await _context.OrdemServicoItem.AddAsync(item);

@@ -72,7 +72,7 @@ namespace API.Controllers
         {
             try
             {
-                await _ordemServicoService.Editar(dto);
+                await _ordemServicoService.Editar(id, dto);
                 return Ok();
             }
             catch (Exception ex)

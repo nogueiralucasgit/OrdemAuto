@@ -36,10 +36,21 @@ namespace Infra.Contexts
             {
                 entity.ToTable("VEICULOS");
                 entity.HasKey(p => p.nCdVeiculo);
+                entity.Property(v => v.tDtAno)
+                      .HasColumnType("timestamp without time zone")
+                      .IsRequired(false);
             }); 
             
             modelBuilder.Entity<CWOrdemServico>(entity =>
             {
+                entity.Property(o => o.tDtOrdem)
+                      .HasColumnType("timestamp without time zone")
+                      .IsRequired(false);
+
+                entity.Property(o => o.tDtRetorno)
+                      .HasColumnType("timestamp without time zone")
+                      .IsRequired(false);
+
                 entity.HasMany(o => o.Itens)
                 .WithOne(i => i.OrdemServico)
                 .HasForeignKey(i => i.nCdOrdemServico);

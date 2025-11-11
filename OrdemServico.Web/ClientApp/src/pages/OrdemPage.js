@@ -78,6 +78,8 @@ const OrdemPage = () => {
                                 <OrdemFormulario
                                     onSubmit={async (formData, itensPecas) => {
 
+                                        console.log(itensPecas);
+        
                                         const payload = {
                                             ...formData,
                                             codigoPrestador: Number(formData.codigoPrestador),
@@ -89,11 +91,26 @@ const OrdemPage = () => {
                                                 descricaoReparo: i.descricaoReparo,
                                                 valorEstimado: i.valorEstimado,
                                                 valorReal: i.valorReal,
-                                                status: i.status
+                                                status: i.status,
+                                                novaPeca: i.novaPeca
+                                                    ? {
+                                                        codigo: 0,
+                                                        nome: i.novaPeca.nome || i.descricaoReparo,
+                                                        cor: i.novaPeca.cor || "",
+                                                        modelo: i.novaPeca.modelo || "",
+                                                        valor: Number(i.novaPeca.valor) || 0,
+                                                        ano: i.novaPeca.ano || null
+                                                    }
+                                                    : null
                                             }))
                                         };
 
-                                        await cadastrarOrdem(payload);
+
+                                        if (modal.tipo == 'nova') {
+                                            await cadastrarOrdem(payload);
+                                        } else {
+                                            await editarOrdem(payload, modal.chavePrimaria);
+                                        }
                                         fecharModal();
                                         carregarOrdens();
                                     }}

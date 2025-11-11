@@ -62,8 +62,8 @@ namespace Infra.Repositories
                 {
                     peca = new CWPecas
                     {
-                        sNmPeca = item.sDsReparo,
-                        sModelo = "",
+                        sNmPeca = item.Peca.sNmPeca,
+                        sModelo = item.Peca.sModelo,
                         sCor = "",
                         tDtAno = null,
                         sValor = item.dVlEstimado

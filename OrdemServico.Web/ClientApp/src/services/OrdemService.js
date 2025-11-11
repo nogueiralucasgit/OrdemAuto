@@ -10,7 +10,7 @@ export const OrdemService = () => {
         success: false,
         mensagem: '',
         ordens: [],
-        modal: { open: false, tipo: null, referencia: null, cadastros: [] }
+        modal: { open: false, tipo: null, referencia: null, chavePrimaria: null, cadastros: []}
     });
 
     const carregarOrdens = useCallback(async () => {
@@ -45,11 +45,11 @@ export const OrdemService = () => {
         }
     };
 
-    const editarOrdem = async (formData) => {
+    const editarOrdem = async (formData, codigoOrdem) => {
         setState(prev => ({ ...prev, loading: true }));
         try {
             const response = await axios.put(
-                `${apiConfig.ordem.baseURL}${apiConfig.ordem.endpoints.editar}`,
+                `${apiConfig.ordem.baseURL}${apiConfig.ordem.endpoints.editar}${codigoOrdem}`,
                 formData,
                 { headers: { 'Content-Type': 'application/json' } }
             );
@@ -71,14 +71,14 @@ export const OrdemService = () => {
                 if (tipo === 'nova') {
                     setState(prev => ({
                         ...prev,
-                        modal: { open: true, tipo: 'nova', referencia: null, cadastros }
+                        modal: { open: true, tipo: 'nova', referencia: null, chavePrimaria: null, cadastros }
                     }));
                 } else if (tipo === 'editar') {
                     const ordem = state.ordens.find(o => o.codigo === codigo);
 
                     setState(prev => ({
                         ...prev,
-                        modal: { open: true, tipo: 'editar', referencia: ordem, cadastros }
+                        modal: { open: true, tipo: 'editar', referencia: ordem, chavePrimaria: ordem.codigo, cadastros }
                     }));
                 }
             });

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace Domain.ViewModel
 {
-    public class DTOOrdemServicoResponse
+    public class DTOOrdemServicoResponse    
     {
         public int Codigo { get; set; }
         public string Descricao { get; set; }
-        public DateTime DataOrdem { get; set; }
-        public DateTime DataRetorno { get; set; }
+        public DateTime? DataOrdem { get; set; }
+        public DateTime? DataRetorno { get; set; }
         public DTOParceiroNegocioResponse Prestador { get; set; }
         public DTOParceiroNegocioResponse Seguradora { get; set; }
         public int CodigoVeiculo { get; set; }

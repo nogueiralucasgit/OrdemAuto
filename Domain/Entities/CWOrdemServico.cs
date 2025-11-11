@@ -12,8 +12,8 @@ namespace Domain.Entities
         [Required]
         public string sDsOrdem { get; set; }
 
-        public DateTime tDtOrdem { get; set; }
-        public DateTime tDtRetorno { get; set; }
+        public DateTime? tDtOrdem { get; set; }
+        public DateTime? tDtRetorno { get; set; }
 
         [ForeignKey(nameof(Prestador))]
         public int nCdPrestador { get; set; }

@@ -38,9 +38,10 @@ namespace Bussiness.Services
             await _repository.Adicionar(cw);
         }
 
-        public async Task Editar(DTOOrdemServicoRequest dto)
+        public async Task Editar(int id,DTOOrdemServicoRequest dto)
         {
             var cw = MapearCW(dto);
+            cw.nCdOrdemServico = id;
             await _repository.Editar(cw);
         }
         public async Task AdicionarPecas(List<DTOOrdemServicoItemRequest> itens, int idOs)
@@ -96,15 +97,46 @@ namespace Bussiness.Services
         }
         private CWOrdemServicoItem MapearCWItem(DTOOrdemServicoItemRequest item)
         {
+            bool isNovaPeca = item.novaPeca != null
+                              && (!string.IsNullOrWhiteSpace(item.novaPeca.Nome)
+                              || !string.IsNullOrWhiteSpace(item.novaPeca.Modelo)
+                              || item.novaPeca.Valor > 0);
+
+            if (isNovaPeca)
+            {
+                return new CWOrdemServicoItem
+                {
+                    nCdPeca = 0,
+                    sDsReparo = item.novaPeca.Nome ?? item.DescricaoReparo,
+                    dVlEstimado = item.novaPeca.Valor > 0 ? item.novaPeca.Valor : item.ValorEstimado,
+                    dVlReal = item.ValorReal,
+                    eStatus = Enum.TryParse(item.Status, out eStatusItemOrdemServico status)
+                              ? status
+                              : eStatusItemOrdemServico.Pendente,
+
+                    Peca = new CWPecas
+                    {
+                        sNmPeca = item.novaPeca.Nome,
+                        sModelo = item.novaPeca.Modelo,
+                        sCor = item.novaPeca.Cor,
+                        sValor = item.novaPeca.Valor,
+                        tDtAno = item.novaPeca.Ano
+                    }
+                };
+            }
+
             return new CWOrdemServicoItem
             {
                 nCdPeca = item.CodigoPeca,
                 sDsReparo = item.DescricaoReparo,
                 dVlEstimado = item.ValorEstimado,
                 dVlReal = item.ValorReal,
-                eStatus = Enum.TryParse(item.Status, out eStatusItemOrdemServico status) ? status : eStatusItemOrdemServico.Pendente
+                eStatus = Enum.TryParse(item.Status, out eStatusItemOrdemServico status2)
+                          ? status2
+                          : eStatusItemOrdemServico.Pendente
             };
         }
+
         private DTOOrdemServicoResponse MapearDTO(CWOrdemServico cw)
         {
             if (cw == null) return null;
@@ -113,7 +145,7 @@ namespace Bussiness.Services
             {
                 Codigo = cw.nCdOrdemServico,
                 Descricao = cw.sDsOrdem,
-                DataOrdem = cw.tDtOrdem,
+                DataOrdem = cw?.tDtOrdem,
                 DataRetorno = cw.tDtRetorno,
                 Prestador = cw.Prestador != null ? new DTOParceiroNegocioResponse
                 {
