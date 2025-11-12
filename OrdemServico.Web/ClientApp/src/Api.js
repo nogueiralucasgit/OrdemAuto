@@ -10,7 +10,8 @@ export default {
             pesquisar: "/",
             consultar: "/Consultar",
             cadastrar: "/Cadastrar",
-            editar: "/"
+            editar: "/",
+            dashboard: "/Dashboard"
         }
     },
         

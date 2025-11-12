@@ -6,6 +6,7 @@ import './styles/App.css';
 import 'bootswatch/dist/lumen/bootstrap.min.css';
 import OrdemPage from './pages/OrdemPage';
 import VeiculoPage from './pages/VeiculoPage';
+import Dashboard from './pages/DashboadPage';
 function App() {
     useEffect(() => {
         document.documentElement.lang = 'pt-BR';
@@ -16,6 +17,7 @@ function App() {
         <Router>
             <Layout>
                 <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/ordem" element={<OrdemPage />} />
                     <Route path="/veiculos" element={<VeiculoPage />} />
                 </Routes>

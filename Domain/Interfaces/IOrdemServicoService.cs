@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Domain.Enums;
 using Domain.ViewModel;
 
 namespace Domain.Interfaces
@@ -10,6 +11,6 @@ namespace Domain.Interfaces
         Task Adicionar(DTOOrdemServicoRequest dtoOrdemServico);
         Task AdicionarPecas(List<DTOOrdemServicoItemRequest> dto, int codigoOrdem);
         Task Editar(int id, DTOOrdemServicoRequest dtoOrdemServico);
-
+        Task<int> Contar(eStatusItemOrdemServico? eStatusItem = null);
     }
 }

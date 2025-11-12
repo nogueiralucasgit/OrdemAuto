@@ -38,7 +38,7 @@ namespace Bussiness.Services
             await _repository.Adicionar(cw);
         }
 
-        public async Task Editar(int id,DTOOrdemServicoRequest dto)
+        public async Task Editar(int id, DTOOrdemServicoRequest dto)
         {
             var cw = MapearCW(dto);
             cw.nCdOrdemServico = id;
@@ -54,7 +54,7 @@ namespace Bussiness.Services
                 {
                     peca = new CWPecas
                     {
-                        sNmPeca = dto.DescricaoReparo, 
+                        sNmPeca = dto.DescricaoReparo,
                         sModelo = "",
                         sCor = "",
                         tDtAno = DateTime.Now,
@@ -79,7 +79,12 @@ namespace Bussiness.Services
                 await _repository.AdicionarItem(item);
             }
         }
-
+        public async Task<int> Contar(eStatusItemOrdemServico? status)
+        {
+            var ordens = await _repository.Pesquisar();
+            if (status == null) return ordens.Count();
+            return ordens.Where(o => o.Itens.Any(i => i.eStatus == status)).Count();
+        }
         private CWOrdemServico MapearCW(DTOOrdemServicoRequest dto)
         {
             return new CWOrdemServico

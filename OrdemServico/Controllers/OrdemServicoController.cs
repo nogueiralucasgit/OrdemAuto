@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Domain.Entities.Domain.Enums;
+using Domain.Interfaces;
 using Domain.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,13 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class OrdemServicoController : ControllerBase
     {
+        private readonly ICadastroService _cadastroService;
         private readonly IOrdemServicoService _ordemServicoService;
 
-        public OrdemServicoController(IOrdemServicoService ordemServicoService)
+        public OrdemServicoController(IOrdemServicoService ordemServicoService, ICadastroService cadastroService)
         {
             _ordemServicoService = ordemServicoService;
+            _cadastroService = cadastroService; 
         }
         [HttpGet]
         public async Task<ActionResult<List<DTOOrdemServicoResponse>>> Pesquisar()
@@ -79,6 +82,19 @@ namespace API.Controllers
             {
                 return StatusCode(500, $"Erro ao atualizar a ordem de serviço: {ex.Message}");
             }
+        }
+        [HttpGet("Dashboard")]
+        public async Task<IActionResult> GetDashboard()
+        {
+            var resultado = new
+            {
+                totalCotacoes = await _ordemServicoService.Contar(),
+                osEmAndamento = await _ordemServicoService.Contar(eStatusItemOrdemServico.EmAndamento),
+                osConcluidas = await _ordemServicoService.Contar(eStatusItemOrdemServico.Concluido),
+                totalVeiculos = (await _cadastroService.PesquisarVeiculos()).OrderByDescending(x => x.Codigo).Count(),
+                ultimasOrdens = (await _ordemServicoService.Pesquisar()).OrderByDescending(o => o.DataOrdem).Take(10).ToList()
+            };
+            return Ok(resultado);
         }
     }
 }
